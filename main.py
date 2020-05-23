@@ -1,12 +1,12 @@
 import random
 from deap import creator, base, tools, algorithms
-from settings.terrainSettings import TerrainSetting
+from settings.settings import Settings
 from tools.terrainHandler import TerrainHandler
 from report.reporter import Reporter
+from problem.normal import setChromosome
 
 reporter = Reporter()
-settings = TerrainSetting()
-TerrainHandler.setName("case2")
+settings = Settings()
 print("Terrain size:", TerrainHandler.getSize())
 
 creator.create("FitnessMax", base.Fitness, weights=(1.0,))
@@ -15,66 +15,46 @@ creator.create("Individual", list, fitness=creator.FitnessMax)
 toolbox = base.Toolbox()
 
 # funkcja randomizacyjna
-toolbox.register("attr_X", random.randint, 0, TerrainHandler.getSize()[0] - 1)
-toolbox.register("attr_Y", random.randint, 0, TerrainHandler.getSize()[1] - 1)
-# inicjalizacja Individual-a przy pomocy wybranej funckji n razy
-toolbox.register(
-    "individual",
-    tools.initCycle,
-    creator.Individual,
-    (toolbox.attr_X, toolbox.attr_Y),
-    n=6,
-)
-# inicjalizacja populacji - listy Individuals-ów
-toolbox.register("population", tools.initRepeat, list, toolbox.individual)
+setChromosome(toolbox)
 
-
-# funkcja evaluacji fitness
-def evalOneMax(individual):
-    costFunction = lambda x: 187.5 * (pow(1.028, x * 100))
-    values = []
-    for i in range(0, len(individual), 2):
-        values.append([individual[i], individual[i + 1]])
-
-    # settings
-    startPoint = [0, 0]
-    endPoint = [260, 110]
-
-    distanceMax = TerrainHandler.distance(startPoint, endPoint)
-    costMax = 10000
-
-    # składowa dystansu - ostatni element do endpoint
-    distanceElement = TerrainHandler.distance(
-        (values[len(values) - 1][0], values[len(values) - 1][1]), endPoint
-    )
-
-    # skladowa kosztu podróży
-    cost = 0
-    values.insert(0, [0, 0])
-    for i in range(0, len(values) - 1):
-        cost = cost + TerrainHandler.travelCost(values[i], values[i + 1])
-
-    adaptationVal = 5000 * (distanceMax - distanceElement) / distanceMax + costFunction(
-        (costMax - cost) / costMax
-    )
-    # if (costMax - cost) /costMax*100>70:
-    # print("distanceElement:",(distanceMax - distanceElement) / distanceMax*100,"%, cost of travel: ", (costMax - cost) /costMax*100,"% cost function",costFunction((costMax - cost) / costMax))
-    return (adaptationVal,) if adaptationVal > 0 else 0
-
-
-toolbox.register("evaluate", evalOneMax)
+# inicjalizacja operatorów genetycznych
 toolbox.register("mate", tools.cxOnePoint)
-toolbox.register("mutate", tools.mutGaussian, mu=0, sigma=10, indpb=0.05)
+toolbox.register(
+    "mutate", tools.mutGaussian, mu=0, sigma=10, indpb=settings.mutationProbability()
+)
 toolbox.register("select", tools.selTournament, tournsize=3)
 
-population = toolbox.population(n=100)
+population = toolbox.population(n=settings.populationSize())
 
-NGEN = 20
-for gen in range(NGEN):
-    offspring = algorithms.varAnd(population, toolbox, cxpb=0.5, mutpb=0.1)
-    fits = toolbox.map(toolbox.evaluate, offspring)
-    for fit, ind in zip(fits, offspring):
+
+# start algorithm
+NGEN = settings.generationsNumber()
+for g in range(NGEN):
+    # Select the next generation individuals
+    offspring = toolbox.select(population, len(population))
+    # Clone the selected individuals
+    offspring = list(map(toolbox.clone, offspring))
+
+    # Apply crossover on the offspring
+    for child1, child2 in zip(offspring[::2], offspring[1::2]):
+        if random.random() < settings.crossoverProbability():
+            toolbox.mate(child1, child2)
+            del child1.fitness.values
+            del child2.fitness.values
+
+    # Apply mutation on the offspring
+    for mutant in offspring:
+        # if random.random() < settings.mutationProbability(): #all might be mutante
+        toolbox.mutate(mutant)
+        del mutant.fitness.values
+
+    # Evaluate the individuals with an invalid fitness
+    invalid_ind = [ind for ind in offspring if not ind.fitness.valid]
+    fitnesses = toolbox.map(toolbox.evaluate, invalid_ind)
+    for ind, fit in zip(invalid_ind, fitnesses):
         ind.fitness.values = fit
-    population = toolbox.select(offspring, k=len(population))
+
+    # The population is entirely replaced by the offspring
+    population[:] = offspring
 best = tools.selBest(population, k=1)
-reporter.reportOutputPath(best)
+reporter.reportOutputPath(best[0])
