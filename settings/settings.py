@@ -2,8 +2,10 @@ import numpy as np
 
 from tools.terrainHandler import TerrainHandler
 
+TerrainHandler.setName("case2")
 
-class TerrainSetting:
+
+class Settings:
     def generationsNumber(self):
         return 50
 
@@ -15,3 +17,5 @@ class TerrainSetting:
 
     def crossoverProbability(self):
         return 0.5
+
+    # def setToolbox(self,toolbox):
