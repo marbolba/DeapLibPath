@@ -28,7 +28,7 @@ def adaptationFunction(individual):
 
     # settings
     startPoint = [0, 0]
-    endPoint = [260, 110]
+    endPoint = [100, 150]
 
     distanceMax = TerrainHandler.distance(startPoint, endPoint)
     costMax = 10000
@@ -49,4 +49,4 @@ def adaptationFunction(individual):
     )
     # if (costMax - cost) /costMax*100>70:
     # print("distanceElement:",(distanceMax - distanceElement) / distanceMax*100,"%, cost of travel: ", (costMax - cost) /costMax*100,"% cost function",costFunction((costMax - cost) / costMax))
-    return (adaptationVal,) if adaptationVal > 0 else 0
+    return (adaptationVal,) if adaptationVal > 0 else (0,)

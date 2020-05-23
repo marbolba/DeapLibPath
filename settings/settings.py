@@ -2,12 +2,12 @@ import numpy as np
 
 from tools.terrainHandler import TerrainHandler
 
-TerrainHandler.setName("case2")
+TerrainHandler.setName("case3")
 
 
 class Settings:
     def generationsNumber(self):
-        return 50
+        return 15
 
     def populationSize(self):
         return 100

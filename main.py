@@ -29,7 +29,8 @@ population = toolbox.population(n=settings.populationSize())
 
 # start algorithm
 NGEN = settings.generationsNumber()
-for g in range(NGEN):
+for generationId in range(NGEN):
+    print("Generation {}".format(generationId))
     # Select the next generation individuals
     offspring = toolbox.select(population, len(population))
     # Clone the selected individuals
@@ -56,5 +57,12 @@ for g in range(NGEN):
 
     # The population is entirely replaced by the offspring
     population[:] = offspring
+
+    # stats
+    # fits = [ind.fitness.values[0] for ind in population]
+    # maximum = max(fits)
+    # mean = sum(fits) / len(fits)
+    reporter.reportBestIndividual(population, generationId)
+    reporter.reportPopulationAverage(population, generationId)
 best = tools.selBest(population, k=1)
 reporter.reportOutputPath(best[0])
