@@ -121,9 +121,9 @@ class TerrainHandler:
 
         TerrainHandler.checkIfFolderExists(historyFolder)
         plt.savefig(f"{historyFolder}generation-{generationNr}.png")
-        plt.show(block=False)
-        plt.pause(0.3)
-        plt.close()
+        plt.show()  # block=False)
+        # plt.pause(0.3)
+        # plt.close()
 
     @staticmethod
     def drawFinalRaport(bestFenotype: [int], best: [int], avg: [int]):
