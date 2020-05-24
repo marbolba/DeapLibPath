@@ -8,12 +8,6 @@ class Reporter:
         self.best = []
         self.avg = []
 
-    def reportOutputPath(self, bestFenotype):
-        values = [[0, 0]]
-        for i in range(0, len(bestFenotype), 2):
-            values.append([bestFenotype[i], bestFenotype[i + 1]])
-        TerrainHandler.drawFinalRaport(values, self.best, self.avg)
-
     def reportBestIndividual(self, population, generationNr: int):
         sortedIndividuals = sorted(
             population, key=lambda x: x.fitness.values[0], reverse=True
@@ -36,5 +30,17 @@ class Reporter:
         )
         self.avg.insert(generationNr, adaptationAvg)
         print(
-            "Population average: adaptation: {} ".format(adaptationAvg)
+            "Population average: \n- adaptation: {} ".format(adaptationAvg)
         )  # tmp without indiv object
+
+    def reportOutputPath(self, bestFenotype):
+        values = [[0, 0]]
+        for i in range(0, len(bestFenotype), 2):
+            values.append([bestFenotype[i], bestFenotype[i + 1]])
+        TerrainHandler.drawFinalRaport(values, self.best, self.avg)
+
+    def reportConvergence(self):
+        online = np.mean(self.avg)
+        offline = np.mean(self.best)
+        print("Online convergence: {}".format(online))
+        print("Offline convergence: {}".format(offline))
