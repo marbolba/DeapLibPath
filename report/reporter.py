@@ -1,5 +1,5 @@
 import numpy as np
-
+import os
 from tools.terrainHandler import TerrainHandler
 
 
@@ -7,6 +7,8 @@ class Reporter:
     def __init__(self):
         self.best = []
         self.avg = []
+        self.online = 0
+        self.offline = 0
 
     def reportBestIndividual(self, population, generationNr: int):
         sortedIndividuals = sorted(
@@ -33,6 +35,12 @@ class Reporter:
             "Population average: \n- adaptation: {} ".format(adaptationAvg)
         )  # tmp without indiv object
 
+    def reportResults(self):
+        self.saveToFile("avg", self.avg)
+        self.saveToFile("best", self.best)
+        self.saveToFile("online", self.online)
+        self.saveToFile("offline", self.offline)
+
     def reportOutputPath(self, bestFenotype):
         values = [[0, 0]]
         for i in range(0, len(bestFenotype), 2):
@@ -40,7 +48,17 @@ class Reporter:
         TerrainHandler.drawFinalRaport(values, self.best, self.avg)
 
     def reportConvergence(self):
-        online = np.mean(self.avg)
-        offline = np.mean(self.best)
-        print("Online convergence: {}".format(online))
-        print("Offline convergence: {}".format(offline))
+        self.online = np.mean(self.avg)
+        self.offline = np.mean(self.best)
+        print("Online convergence: {}".format(self.online))
+        print("Offline convergence: {}".format(self.offline))
+
+    def saveToFile(self, name, value):
+        historyFolder = f"{TerrainHandler.getName()}{TerrainHandler.getResultId()}"
+        self.checkIfFolderExists(historyFolder)
+        np.save("{}{}".format(historyFolder, name), value)
+
+    def checkIfFolderExists(self, folderPath):
+        if not (os.path.exists(folderPath)):
+            # create the directory you want to save to
+            os.mkdir(folderPath)

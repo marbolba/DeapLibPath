@@ -7,7 +7,7 @@ TerrainHandler.setName("case3")
 
 class Settings:
     def generationsNumber(self):
-        return 15
+        return 2
 
     def populationSize(self):
         return 100

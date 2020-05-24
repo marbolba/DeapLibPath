@@ -4,10 +4,13 @@ import numpy as np
 from scipy.spatial import distance
 import matplotlib.pyplot as plt
 import matplotlib.gridspec as gridspec
+from datetime import datetime
+import os
 
 
 class TerrainHandler:
     folderPath = ""
+    resultId = "results{}/".format(datetime.now().strftime("%d-%b-%Y_%H%M%S"))
     terrain = []
     accessibility = []
     domain = ()
@@ -89,6 +92,14 @@ class TerrainHandler:
         TerrainHandler.fetchAssets(folderName)
 
     @staticmethod
+    def getName():
+        return TerrainHandler.folderPath
+
+    @staticmethod
+    def getResultId():
+        return TerrainHandler.resultId
+
+    @staticmethod
     def fetchAssets(folderName):
         TerrainHandler.terrain = TerrainHandler.readFromFile(
             "assets/terrains/{}/terrain.npy".format(folderName)
@@ -102,7 +113,7 @@ class TerrainHandler:
 
     @staticmethod
     def drawTerrainWithPoints(points: [int], generationNr: int):
-        historyFolder = f"{TerrainHandler.folderPath}history/"
+        historyFolder = f"{TerrainHandler.folderPath}{TerrainHandler.resultId}"
         # terrain
         plt.figure(figsize=(8, 4))
         plt.subplots_adjust(
@@ -127,6 +138,7 @@ class TerrainHandler:
 
     @staticmethod
     def drawFinalRaport(bestFenotype: [int], best: [int], avg: [int]):
+        historyFolder = f"{TerrainHandler.folderPath}{TerrainHandler.resultId}"
         gs = gridspec.GridSpec(2, 4)
         # terrain
         plt.figure(figsize=(17, 7))
@@ -156,9 +168,9 @@ class TerrainHandler:
         plt.ylabel("Pokolenie")
         plt.xlabel("Dostosowanie")
 
-        TerrainHandler.checkIfFolderExists(TerrainHandler.folderPath)
+        TerrainHandler.checkIfFolderExists(historyFolder)
         plt.subplots_adjust(
             top=0.95, bottom=0.07, left=0.05, right=0.95, hspace=0.27, wspace=0.05
         )
-        plt.savefig("{}result-2d.png".format(TerrainHandler.folderPath))
+        plt.savefig("{}result.png".format(historyFolder))
         plt.show()
