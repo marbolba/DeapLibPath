@@ -62,6 +62,5 @@ for generationId in range(NGEN):
     reporter.reportBestIndividual(population, generationId)
     reporter.reportPopulationAverage(population, generationId)
 best = tools.selBest(population, k=1)
-reporter.reportOutputPath(best[0])
 reporter.reportConvergence()
-reporter.reportResults()
+reporter.reportResults(best[0])

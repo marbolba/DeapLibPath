@@ -1,6 +1,10 @@
 import numpy as np
 import os
 from tools.terrainHandler import TerrainHandler
+from settings.settings import Settings
+
+
+settings = Settings()
 
 
 class Reporter:
@@ -35,11 +39,24 @@ class Reporter:
             "Population average: \n- adaptation: {} ".format(adaptationAvg)
         )  # tmp without indiv object
 
-    def reportResults(self):
+    def reportResults(self, bestIndividual):
+        self.reportOutputPath(bestIndividual)
         self.saveToFile("avg", self.avg)
         self.saveToFile("best", self.best)
         self.saveToFile("online", self.online)
         self.saveToFile("offline", self.offline)
+        # readable report
+        historyFolder = f"{TerrainHandler.getName()}{TerrainHandler.getResultId()}"
+        with open(f"{historyFolder}result.txt", "w") as text_file:
+            text_file.write(
+                "Generations nr: {} \n".format(settings.generationsNumber())
+            )
+            text_file.write("Population size: {} \n".format(settings.populationSize()))
+            text_file.write("Best individual: {} \n".format(bestIndividual))
+            text_file.write("Avg history: {} \n".format(self.avg))
+            text_file.write("Best history: {} \n".format(self.best))
+            text_file.write("Convergence online: {} \n".format(self.online))
+            text_file.write("Convergence offline: {} \n".format(self.offline))
 
     def reportOutputPath(self, bestFenotype):
         values = [[0, 0]]
