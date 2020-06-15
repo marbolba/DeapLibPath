@@ -158,15 +158,15 @@ class TerrainHandler:
         plt.subplot(gs[0, 3])
         plt.plot(range(0, len(best)), best)
         plt.title("Dostosowanie najlepszego osobnika")
-        plt.ylabel("Pokolenie")
-        plt.xlabel("Dostosowanie")
+        plt.ylabel("Dostosowanie")
+        plt.xlabel("PokolenieDostosowanie")
 
         # avg
         plt.subplot(gs[1, 3])
         plt.plot(range(0, len(avg)), avg)
         plt.title("Dostosowanie przeciętnego osobnika")
-        plt.ylabel("Pokolenie")
-        plt.xlabel("Dostosowanie")
+        plt.ylabel("Dostosowanie")
+        plt.xlabel("PokolenieDostosowanie")
 
         TerrainHandler.checkIfFolderExists(historyFolder)
         plt.subplots_adjust(
