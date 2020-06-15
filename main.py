@@ -22,9 +22,14 @@ toolbox.register("mate", tools.cxOnePoint)
 toolbox.register(
     "mutate", tools.mutGaussian, mu=0, sigma=10, indpb=settings.mutationProbability()
 )
-toolbox.register("select", tools.selTournament, tournsize=3)
+toolbox.register("select", tools.selRoulette)
 
 population = toolbox.population(n=settings.populationSize())
+# Evaluate the individuals with an invalid fitness
+invalid_ind = [ind for ind in population if not ind.fitness.valid]
+fitnesses = toolbox.map(toolbox.evaluate, invalid_ind)
+for ind, fit in zip(invalid_ind, fitnesses):
+    ind.fitness.values = fit
 
 
 # start algorithm
@@ -59,8 +64,8 @@ for generationId in range(NGEN):
     population[:] = offspring
 
     # stats
-    reporter.reportBestIndividual(population, generationId)
     reporter.reportPopulationAverage(population, generationId)
+    reporter.reportBestIndividual(population, generationId)
 best = tools.selBest(population, k=1)
 reporter.reportConvergence()
 reporter.reportResults(best[0])
