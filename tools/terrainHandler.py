@@ -154,7 +154,7 @@ class TerrainHandler:
 
         # route
         items = np.transpose([list(item) for item in points])
-        plt.plot(items[0], items[1], "xr-")
+        plt.plot(items[0], items[1], "r-")
         plt.title("Trasa")
         plt.xlabel("X")
         plt.ylabel("Y")
@@ -193,7 +193,7 @@ class TerrainHandler:
 
         # route
         items = np.transpose([list(item) for item in bestFenotype])
-        plt.plot(items[0], items[1], "xr-")
+        plt.plot(items[0], items[1], "r-")
         plt.title("Trasa")
         plt.xlabel("X")
         plt.ylabel("Y")
