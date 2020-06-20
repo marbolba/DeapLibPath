@@ -3,9 +3,13 @@ from deap import creator, base, tools, algorithms
 from settings.settings import Settings
 from tools.terrainHandler import TerrainHandler
 from report.reporter import Reporter
-from problem.normal import setChromosome
 
-reporter = Reporter()
+from problem.normal import Normal
+# from problem.normalSelect import NormalSelect
+
+problem = Normal()
+# problem = NormalSelect()
+reporter = Reporter(problem)
 settings = Settings()
 print("Terrain size:", TerrainHandler.getSize())
 
@@ -15,14 +19,15 @@ creator.create("Individual", list, fitness=creator.FitnessMax)
 toolbox = base.Toolbox()
 
 # funkcja randomizacyjna
-setChromosome(toolbox)
+problem.setChromosome(toolbox)
 
 # inicjalizacja operatorów genetycznych
 toolbox.register("mate", tools.cxOnePoint)
 toolbox.register(
     "mutate", tools.mutGaussian, mu=0, sigma=10, indpb=settings.mutationProbability()
 )
-toolbox.register("select", tools.selRoulette)
+# toolbox.register("select", tools.selRoulette)
+toolbox.register("select", tools.selTournament, tournsize=10)
 
 population = toolbox.population(n=settings.populationSize())
 # Evaluate the individuals with an invalid fitness
@@ -50,7 +55,6 @@ for generationId in range(NGEN):
 
     # Apply mutation on the offspring
     for mutant in offspring:
-        # if random.random() < settings.mutationProbability(): #all might be mutante
         toolbox.mutate(mutant)
         del mutant.fitness.values
 
