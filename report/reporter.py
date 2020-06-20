@@ -8,11 +8,12 @@ settings = Settings()
 
 
 class Reporter:
-    def __init__(self):
+    def __init__(self, problem):
         self.best = []
         self.avg = []
         self.online = 0
         self.offline = 0
+        self.problem = problem
 
     def reportBestIndividual(self, population, generationNr: int):
         sortedIndividuals = sorted(
@@ -25,9 +26,7 @@ class Reporter:
             )
         )
         best = sortedIndividuals[0]
-        values = [[0, 0]]
-        for i in range(0, len(best), 2):
-            values.append([best[i], best[i + 1]])
+        values = [[0, 0]] + self.problem.getPoints(best)
         TerrainHandler.drawTerrainWithPoints(values, generationNr)
 
     def reportPopulationAverage(self, population, generationNr: int):
@@ -40,28 +39,32 @@ class Reporter:
         )  # tmp without indiv object
 
     def reportResults(self, bestIndividual):
-        self.reportOutputPath(bestIndividual)
-        self.saveToFile("avg", self.avg)
-        self.saveToFile("best", self.best)
-        self.saveToFile("online", self.online)
-        self.saveToFile("offline", self.offline)
-        # readable report
-        historyFolder = f"{TerrainHandler.getName()}{TerrainHandler.getResultId()}"
-        with open(f"{historyFolder}result.txt", "w") as text_file:
-            text_file.write(
-                "Generations nr: {} \n".format(settings.generationsNumber())
-            )
-            text_file.write("Population size: {} \n".format(settings.populationSize()))
-            text_file.write("Best individual: {} \n".format(bestIndividual))
-            text_file.write("Avg history: {} \n".format(self.avg))
-            text_file.write("Best history: {} \n".format(self.best))
-            text_file.write("Convergence online: {} \n".format(self.online))
-            text_file.write("Convergence offline: {} \n".format(self.offline))
+        try:
+            self.reportOutputPath(bestIndividual)
+            self.saveToFile("avg", self.avg)
+            self.saveToFile("best", self.best)
 
-    def reportOutputPath(self, bestFenotype):
-        values = [[0, 0]]
-        for i in range(0, len(bestFenotype), 2):
-            values.append([bestFenotype[i], bestFenotype[i + 1]])
+            self.saveToFile("online", self.online)
+            self.saveToFile("offline", self.offline)
+            # readable report
+            historyFolder = f"{TerrainHandler.getName()}{TerrainHandler.getResultId()}"
+            with open(f"{historyFolder}result.txt", "w") as text_file:
+                text_file.write(
+                    "Generations nr: {} \n".format(settings.generationsNumber())
+                )
+                text_file.write(
+                    "Population size: {} \n".format(settings.populationSize())
+                )
+                text_file.write("Best individual: {} \n".format(bestIndividual))
+                text_file.write("Avg history: {} \n".format(self.avg))
+                text_file.write("Best history: {} \n".format(self.best))
+                text_file.write("Convergence online: {} \n".format(self.online))
+                text_file.write("Convergence offline: {} \n".format(self.offline))
+        except:
+            print("reportResults error")
+
+    def reportOutputPath(self, best):
+        values = [[0, 0]] + self.problem.getPoints(best)
         TerrainHandler.drawFinalRaport(values, self.best, self.avg)
 
     def reportConvergence(self):
