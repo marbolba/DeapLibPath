@@ -4,7 +4,7 @@ from deap import creator, base, tools, algorithms
 
 
 class Normal:
-    maxStepsNr = 5
+    maxStepsNr = 3
 
     def setChromosome(self, toolbox):
         toolbox.register("attr_X", random.randint, 0, TerrainHandler.getSize()[0] - 1)
@@ -33,9 +33,9 @@ class Normal:
         values = self.getPoints(individual)
 
         # settings
-        startPoint = [0, 0]
-        endPoint = [250, 100]
-        
+        startPoint = TerrainHandler.getWaypoints()[0]
+        endPoint = TerrainHandler.getWaypoints()[1]
+
         distanceMax = TerrainHandler.distance(startPoint, endPoint)
         costMax = 10000
 
@@ -46,7 +46,7 @@ class Normal:
 
         # skladowa kosztu podróży
         cost = 0
-        values.insert(0, [0, 0])
+        values.insert(0, startPoint)
         for i in range(0, len(values) - 1):
             cost = cost + TerrainHandler.travelCost(values[i], values[i + 1])
 

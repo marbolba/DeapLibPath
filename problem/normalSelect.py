@@ -26,7 +26,7 @@ class NormalSelect:
         stepsNr = round(individual[0])
         values = []
         for i in range(0, 3 * self.maxStepsNr, 3):
-            if i < (3 * stepsNr)-1:
+            if i < (3 * stepsNr) - 1:
                 values.append([round(individual[i + 1]), round(individual[i + 2])])
         return values
 
@@ -35,8 +35,8 @@ class NormalSelect:
         values = self.getPoints(individual)
 
         # settings
-        startPoint = [0, 0]
-        endPoint = [250, 100]
+        startPoint = TerrainHandler.getWaypoints()[0]
+        endPoint = TerrainHandler.getWaypoints()[1]
 
         distanceMax = TerrainHandler.distance(startPoint, endPoint)
         costMax = 10000

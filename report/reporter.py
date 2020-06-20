@@ -26,7 +26,8 @@ class Reporter:
             )
         )
         best = sortedIndividuals[0]
-        values = [[0, 0]] + self.problem.getPoints(best)
+        values = self.problem.getPoints(best)
+        values.insert(0, TerrainHandler.getWaypoints()[0])
         TerrainHandler.drawTerrainWithPoints(values, generationNr)
 
     def reportPopulationAverage(self, population, generationNr: int):
@@ -64,7 +65,7 @@ class Reporter:
             print("reportResults error")
 
     def reportOutputPath(self, best):
-        values = [[0, 0]] + self.problem.getPoints(best)
+        values = TerrainHandler.getWaypoints()[0] + self.problem.getPoints(best)
         TerrainHandler.drawFinalRaport(values, self.best, self.avg)
 
     def reportConvergence(self):

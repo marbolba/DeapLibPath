@@ -13,6 +13,7 @@ class TerrainHandler:
     resultId = "results{}/".format(datetime.now().strftime("%d-%b-%Y_%H%M%S"))
     terrain = []
     accessibility = []
+    waypoints = []
     domain = ()
 
     @staticmethod
@@ -38,6 +39,10 @@ class TerrainHandler:
     @staticmethod
     def getSize():
         return TerrainHandler.domain[1], TerrainHandler.domain[0]
+
+    @staticmethod
+    def getWaypoints():
+        return TerrainHandler.waypoints[0], TerrainHandler.waypoints[1]
 
     @staticmethod
     def getPointHeight(x, y):
@@ -109,6 +114,9 @@ class TerrainHandler:
         TerrainHandler.domain = TerrainHandler.readFromFile(
             "assets/terrains/{}/terrain-size.npy".format(folderName)
         )
+        TerrainHandler.waypoints = TerrainHandler.readFromFile(
+            "assets/terrains/{}/terrain-waypoints.npy".format(folderName)
+        )
         try:
             TerrainHandler.accessibility = TerrainHandler.readFromFile(
                 "assets/terrains/{}/accessibility.npy".format(folderName)
@@ -116,7 +124,6 @@ class TerrainHandler:
         except IOError:
             print("WARN: No accessibility mesh")
             TerrainHandler.accessibility = np.ones(TerrainHandler.domain)
-
 
     @staticmethod
     def drawTerrainWithPoints(points: [int], generationNr: int):
@@ -130,6 +137,18 @@ class TerrainHandler:
             top=0.95, bottom=0.07, left=0.05, right=0.5, hspace=0.27, wspace=0.05
         )
         plt.matshow(terrain, fignum=1)
+        plt.plot(
+            TerrainHandler.getWaypoints()[0][0],
+            TerrainHandler.getWaypoints()[0][1],
+            "o",
+            color="green",
+        )
+        plt.plot(
+            TerrainHandler.getWaypoints()[1][0],
+            TerrainHandler.getWaypoints()[1][1],
+            "o",
+            color="red",
+        )
         cbar = plt.colorbar()
         cbar.set_label("Z", rotation=270)
 
@@ -157,6 +176,18 @@ class TerrainHandler:
         plt.figure(figsize=(17, 7))
         plt.subplot(gs[:, :3])
         plt.matshow(terrain, fignum=0)
+        plt.plot(
+            TerrainHandler.getWaypoints()[0][0],
+            TerrainHandler.getWaypoints()[0][1],
+            "o",
+            color="green",
+        )
+        plt.plot(
+            TerrainHandler.getWaypoints()[1][0],
+            TerrainHandler.getWaypoints()[1][1],
+            "o",
+            color="red",
+        )
         cbar = plt.colorbar()
         cbar.set_label("Z", rotation=270)
 
