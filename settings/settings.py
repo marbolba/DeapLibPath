@@ -2,20 +2,17 @@ import numpy as np
 
 from tools.terrainHandler import TerrainHandler
 
-TerrainHandler.setName("case3")
-
+TerrainHandler.setName("case2rounded")
 
 class Settings:
     def generationsNumber(self):
-        return 2
+        return 40
 
     def populationSize(self):
-        return 100
+        return 300
 
     def mutationProbability(self):
-        return 0.05
+        return 0.01
 
     def crossoverProbability(self):
-        return 0.5
-
-    # def setToolbox(self,toolbox):
+        return 1
