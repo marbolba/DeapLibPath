@@ -10,7 +10,7 @@ import os
 
 class TerrainHandler:
     folderPath = ""
-    resultId = "results{}/".format(datetime.now().strftime("%d-%b-%Y_%H%M%S"))
+    resultId = "results{}/".format(datetime.now().strftime("%d-%b-%Y_%H%M%S_%f"))
     terrain = []
     accessibility = []
     waypoints = []
@@ -58,7 +58,7 @@ class TerrainHandler:
 
     @staticmethod
     def travelCost(point1, point2):
-        oneUpCost = 30  # cost of traveling one point height
+        oneUpCost = 100  # cost of traveling one point height
 
         size = TerrainHandler.getSize()
         fi = math.atan2(point2[1] - point1[1], point2[0] - point1[0])
@@ -130,7 +130,6 @@ class TerrainHandler:
         historyFolder = f"{TerrainHandler.folderPath}{TerrainHandler.resultId}"
         # terrain + accessibility
         terrain = TerrainHandler.terrain * TerrainHandler.accessibility
-
         # terrain
         plt.figure(figsize=(8, 4))
         plt.subplots_adjust(
@@ -153,7 +152,10 @@ class TerrainHandler:
         cbar.set_label("Z", rotation=270)
 
         # route
-        items = np.transpose([list(item) for item in points])
+        pointsLoc = points.copy()
+        pointsLoc.insert(0, tuple(TerrainHandler.getWaypoints()[0]))
+
+        items = np.transpose([list(item) for item in pointsLoc])
         plt.plot(items[0], items[1], "r-")
         plt.title("Trasa")
         plt.xlabel("X")
@@ -176,6 +178,20 @@ class TerrainHandler:
         plt.figure(figsize=(17, 7))
         plt.subplot(gs[:, :3])
         plt.matshow(terrain, fignum=0)
+        cbar = plt.colorbar()
+        cbar.set_label("Z", rotation=270)
+
+        # route
+        pointsLoc = bestFenotype.copy()
+        pointsLoc.insert(0, tuple(TerrainHandler.getWaypoints()[0]))
+
+        items = np.transpose([list(item) for item in pointsLoc])
+        plt.plot(items[0], items[1], "r-")
+        plt.title("Trasa")
+        plt.xlabel("X")
+        plt.ylabel("Y")
+
+        # start/end point
         plt.plot(
             TerrainHandler.getWaypoints()[0][0],
             TerrainHandler.getWaypoints()[0][1],
@@ -188,33 +204,25 @@ class TerrainHandler:
             "o",
             color="red",
         )
-        cbar = plt.colorbar()
-        cbar.set_label("Z", rotation=270)
-
-        # route
-        items = np.transpose([list(item) for item in bestFenotype])
-        plt.plot(items[0], items[1], "r-")
-        plt.title("Trasa")
-        plt.xlabel("X")
-        plt.ylabel("Y")
 
         # best
         plt.subplot(gs[0, 3])
         plt.plot(range(0, len(best)), best)
         plt.title("Dostosowanie najlepszego osobnika")
+        plt.xlabel("Pokolenie")
         plt.ylabel("Dostosowanie")
-        plt.xlabel("PokolenieDostosowanie")
 
         # avg
         plt.subplot(gs[1, 3])
         plt.plot(range(0, len(avg)), avg)
         plt.title("Dostosowanie przeciętnego osobnika")
+        plt.xlabel("Pokolenie")
         plt.ylabel("Dostosowanie")
-        plt.xlabel("PokolenieDostosowanie")
 
         TerrainHandler.checkIfFolderExists(historyFolder)
         plt.subplots_adjust(
             top=0.95, bottom=0.07, left=0.05, right=0.95, hspace=0.27, wspace=0.05
         )
-        plt.savefig("{}result.png".format(historyFolder))
-        plt.show()
+        plt.savefig("{}result-2d.png".format(historyFolder))
+        plt.close()
+        # plt.show()
